@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator ⚖️</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; background-color: #f4f4f9; text-align: center; }
+        .container { max-width: 400px; margin: auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 95%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #218838; }
+        .result, .error { margin-top: 20px; font-weight: bold; font-size: 18px; }
+        .result { color: #007bff; }
+        .error { color: #dc3545; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>BMI Calculator ⚖️</h2>
+    
+    <input type="text" id="name" placeholder="Enter your name">
+    <input type="number" id="weight" step="0.1" placeholder="Enter weight in kg (e.g., 70)">
+    <input type="number" id="height" step="0.01" placeholder="Enter height in meters (e.g., 1.75)">
+    
+    <button onclick="calculateBMI()">Calculate BMI ⚡</button>
+
+    <div id="resultSection" class="result"></div>
+    <div id="errorSection" class="error"></div>
+</div>
+
+<script>
+// JavaScript fetch() Connection (Task 8)
+async function calculateBMI() {
+    const name = document.getElementById('name').value;
+    const weight = document.getElementById('weight').value;
+    const height = document.getElementById('height').value;
+
+    // Clear previous results
+    document.getElementById('resultSection').innerText = "";
+    document.getElementById('errorSection').innerText = "";
+
+    try {
+        // Calling Flask API internally
+        const response = await fetch('/calculate-bmi', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, weight: parseFloat(weight), height: parseFloat(height) })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Success Output Display
+            document.getElementById('resultSection').innerText = `Hello ${data.name}! Your BMI is ${data.bmi} (${data.category})`;
+        } else {
+            // Error Message Display
+            document.getElementById('errorSection').innerText = `Error: ${data.error}`;
+        }
+    } catch (err) {
+        document.getElementById('errorSection').innerText = "Something went wrong connection-wise!";
+    }
+}
+</script>
+
+</body>
+</html>
